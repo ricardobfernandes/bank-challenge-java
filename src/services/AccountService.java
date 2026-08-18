@@ -13,7 +13,7 @@ import entities.SavingsAccount;
 
 public class AccountService {
 
-	public Account createAccount(Scanner sc) {
+	public Account createAccount(Map<Integer, Account> accounts,Scanner sc) {
 		System.out.println("Enter the type of account you want to create: ");
 		System.out.printf("%-30s %s%n", "1 - Checking Acount", "2 - Savings Account");
 		int accountTypeOption = sc.nextInt();
@@ -29,24 +29,26 @@ public class AccountService {
 		System.out.println("Enter the account number: ");
 		Integer accountNumber = sc.nextInt();
 		sc.nextLine();
+		if (accounts.containsKey(accountNumber)) {
+		    throw new IllegalArgumentException("Account number already exists!");
+		    }
 		System.out.println("Create a password:");
 		String password = sc.nextLine();
 		if (accountType.equals(AccountType.CHECKING_ACCOUNT)) {
-			System.out.println("Enter the credit limit: ");
-			Double creditLimit = sc.nextDouble();
-			CheckingAccount Account = new CheckingAccount(agencyNumber, accountNumber, password, accountType, accountHolder, balance, creditLimit);
-			System.out.println("Checking account created successfully!");
-			return Account;
-		} else if (accountType.equals(AccountType.SAVINGS_ACCOUNT)) {
-			System.out.println("Enter the interest rate: ");
-			Double interestRate = sc.nextDouble();
-			SavingsAccount Account = new SavingsAccount(agencyNumber, accountNumber, password, accountType, accountHolder, balance, interestRate);
-			System.out.println("Savings account created successfully!");
-			return Account;
-		} else {
-			System.out.println("Invalid account type!");
-			return null;
-		}
+					System.out.println("Enter the credit limit: ");
+					Double creditLimit = sc.nextDouble();
+					CheckingAccount Account = new CheckingAccount(agencyNumber, accountNumber, password, accountType, accountHolder, balance, creditLimit);
+					System.out.println("Checking account created successfully!");
+					return Account;
+				}
+		else if (accountType.equals(AccountType.SAVINGS_ACCOUNT)) {
+					System.out.println("Enter the interest rate: ");
+					Double interestRate = sc.nextDouble();
+					SavingsAccount Account = new SavingsAccount(agencyNumber, accountNumber, password, accountType, accountHolder, balance, interestRate);
+					System.out.println("Savings account created successfully!");
+					return Account;
+				}
+		throw new IllegalArgumentException("Invalid account type!");
 	}
 	public void transfer(Account source, Account destination, double amount, Scanner sc) {
 		   if (amount > 1000) {

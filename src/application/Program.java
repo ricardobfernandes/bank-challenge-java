@@ -40,9 +40,13 @@ public class Program {
 
 				case 1: {
 					AccountService accountService = new AccountService();
-					Account account = accountService.createAccount(sc);
-					accounts.put(account.getAccountNumber(), account);
-					System.out.println();
+					try {
+					    Account account =  accountService.createAccount(accounts,sc);
+					    accounts.put(account.getAccountNumber(), account);
+
+					} catch (IllegalArgumentException e) {
+					    System.out.println(e.getMessage());
+					}
 					running = Continuation(sc);
 					break;
 				}

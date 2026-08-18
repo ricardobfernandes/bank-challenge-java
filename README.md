@@ -205,7 +205,7 @@ DateTime;Type;Amount
 ## Pay bills
 
 To use a typeable line, ensure that you have a string with 47 characters:
-- The last 10 characters refers to the payment valuer
+- The last 10 characters refers to the payment value
 - The character at the position 33 to 37 refers to the due date according to FEBRABAN organization
 
 Example:
