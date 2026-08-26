@@ -115,4 +115,8 @@ public class AccountService {
 	    System.out.println( "Maximum login attempts exceeded!");
 	    return null;
 	}
+	public void createAccount(String name) {
+		// TODO Auto-generated method stub
+		
+	}
 }
