@@ -6,6 +6,8 @@ import entities.Account;
 import exceptions.AccountAlreadyExistsException;
 import exceptions.AccountNotFoundException;
 import exceptions.InvalidAccountTypeException;
+import exceptions.InvalidAddressException;
+import exceptions.InvalidContactInfoException;
 import exceptions.InvalidLoginException;
 import services.AccountService;
 
@@ -40,7 +42,12 @@ public class MainMenu {
 						System.out.println(e.getMessage());
 					} catch (InvalidAccountTypeException e) {
 						System.out.println(e.getMessage());
+					} catch (InvalidAddressException e) {
+						System.out.println(e.getMessage());
+					} catch (InvalidContactInfoException e) {
+						System.out.println(e.getMessage());
 					}
+
 					running = MenuUtils.Continuation(sc);
 					break;
 				}

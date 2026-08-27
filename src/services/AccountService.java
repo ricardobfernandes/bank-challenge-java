@@ -16,7 +16,9 @@ import exceptions.AccountAlreadyExistsException;
 import exceptions.AccountNotFoundException;
 import exceptions.InsufficientFundsException;
 import exceptions.InvalidAccountTypeException;
+import exceptions.InvalidAddressException;
 import exceptions.InvalidAmountException;
+import exceptions.InvalidContactInfoException;
 import exceptions.InvalidLoginException;
 import exceptions.InvalidTypeableline;
 import exceptions.TransferNotAllowedException;
@@ -28,6 +30,9 @@ public class AccountService {
 		System.out.printf("%-30s %s%n", "1 - Checking Acount", "2 - Savings Account");
 		int accountTypeOption = sc.nextInt();
 		sc.nextLine();
+		if (accountTypeOption < 1 || accountTypeOption > 2) {
+			throw new InvalidAccountTypeException("Invalid account type.");
+		}
 		AccountType accountType = AccountType.values()[accountTypeOption - 1];
 		System.out.println("Enter the account holder's name: ");
 		String accountHolder = sc.nextLine();
@@ -44,18 +49,39 @@ public class AccountService {
 		}
 		System.out.println("Create a password:");
 		String password = sc.nextLine();
+		System.out.println("Please inform your address:");
+		System.out.println("Example: 111 JK street, Apt 2B, Ipatinga, MG 35160011, BRA");
+		String address = sc.nextLine();
+		if (address.isBlank()) {
+			throw new InvalidAddressException("Your Address must not be empty or blank");
+		}
+
+		System.out.println("Please inform your cellphone number:");
+		System.out.println("Example: 31999999999");
+		String phoneNumber = sc.nextLine();
+		if (phoneNumber.isBlank() || phoneNumber.length() < 10) {
+			throw new InvalidContactInfoException("Phone number must not be empty or blank");
+		}
+
+		System.out.println("Please inform your email:");
+		System.out.println("Example: love@gmail.com");
+		String email = sc.nextLine();
+		if (email.isBlank() || !email.contains("@")) {
+			throw new InvalidContactInfoException("Invalid email address.");
+		}
+
 		if (accountType.equals(AccountType.CHECKING_ACCOUNT)) {
 			System.out.println("Enter the credit limit: ");
 			Double creditLimit = sc.nextDouble();
-			CheckingAccount Account = new CheckingAccount(agencyNumber, accountNumber, password, accountType,
-					accountHolder, balance, creditLimit);
+			CheckingAccount Account = new CheckingAccount(agencyNumber, accountNumber, password, address, phoneNumber,
+					email, accountType, accountHolder, balance, creditLimit);
 			System.out.println("Checking account created successfully!");
 			return Account;
 		} else if (accountType.equals(AccountType.SAVINGS_ACCOUNT)) {
 			System.out.println("Enter the interest rate: ");
 			Double interestRate = sc.nextDouble();
-			SavingsAccount Account = new SavingsAccount(agencyNumber, accountNumber, password, accountType,
-					accountHolder, balance, interestRate);
+			SavingsAccount Account = new SavingsAccount(agencyNumber, accountNumber, password, address, phoneNumber,
+					email, accountType, accountHolder, balance, interestRate);
 			System.out.println("Savings account created successfully!");
 			return Account;
 		}
@@ -128,6 +154,9 @@ public class AccountService {
 		if (account.getAccountType() == AccountType.SAVINGS_ACCOUNT) {
 			throw new InvalidAccountTypeException("This is not a Checking Account!");
 		}
+		if (amount <= 0) {
+			throw new InvalidAmountException("Limit increase must be greater than zero.");
+		}
 		CheckingAccount checking = (CheckingAccount) account;
 		checking.increaseCreditLimit(amount);
 	}
@@ -170,4 +199,51 @@ public class AccountService {
 		}
 		return amount;
 	}
+
+	public void changePassword(Account account, String currentPassword, String newPassword) {
+		if (!account.getPassword().equals(currentPassword)) {
+			throw new InvalidLoginException("Current password is incorrect.");
+		}
+		if (newPassword.isBlank()) {
+			throw new InvalidLoginException("Password must not be empty.");
+		}
+		account.setPassword(newPassword);
+	}
+
+	public void changeAddress(Account account, String newAddress) {
+		if (newAddress.isBlank()) {
+			throw new InvalidAddressException("Your Address must not be empty or blank");
+		}
+		account.setAddress(newAddress);
+	}
+
+	public void changeContactInformation(Account account, String newPhoneNumber, String newEmail) {
+		if (newPhoneNumber.isBlank() || newPhoneNumber.length() < 10) {
+			throw new InvalidContactInfoException("Phone number must not be empty or blank");
+		}
+		if (newEmail.isBlank() || !newEmail.contains("@")) {
+			throw new InvalidContactInfoException("Invalid email address.");
+		}
+		account.setPhoneNumber(newPhoneNumber);
+		account.setEmail(newEmail);
+	}
+
+	public double investMoney(Account account, double amount) {
+
+		if (account.getAccountType() == AccountType.SAVINGS_ACCOUNT) {
+			throw new InvalidAccountTypeException("This investment product is available only for Checking Accounts.");
+		}
+		if (amount <= 0) {
+			throw new InvalidAmountException("Investment amount must be greater than zero.");
+		}
+		if (account.getBalance() < amount) {
+			throw new InsufficientFundsException("Insufficient funds for investment.");
+		}
+		account.withdraw(amount);
+		account.setInvestedBalance(account.getInvestedBalance() + amount);
+		account.addTransaction("CDI_INVESTMENT", -amount);
+		double cdiRate = 0.12;
+		return amount * (1 + cdiRate);
+	}
+
 }

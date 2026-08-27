@@ -6,8 +6,10 @@ public class CheckingAccount extends Account {
 
 	private Double creditLimit;
 
-	public CheckingAccount(Integer agencyNumber, Integer accountNumber, String password, AccountType accountType, String accountHolder, Double balance, Double creditLimit) {
-		super(agencyNumber, accountNumber, password,accountType, accountHolder, balance);
+	public CheckingAccount(Integer agencyNumber, Integer accountNumber, String password, String address,
+			String phoneNumber, String email, AccountType accountType, String accountHolder, Double balance,
+			Double creditLimit) {
+		super(agencyNumber, accountNumber, password, address, phoneNumber, email, accountType, accountHolder, balance);
 		this.creditLimit = creditLimit;
 	}
 

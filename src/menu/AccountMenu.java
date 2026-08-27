@@ -9,7 +9,10 @@ import entities.CheckingAccount;
 import exceptions.AccountNotFoundException;
 import exceptions.InsufficientFundsException;
 import exceptions.InvalidAccountTypeException;
+import exceptions.InvalidAddressException;
 import exceptions.InvalidAmountException;
+import exceptions.InvalidContactInfoException;
+import exceptions.InvalidLoginException;
 import exceptions.InvalidTypeableline;
 import exceptions.TransferNotAllowedException;
 import services.AccountService;
@@ -126,6 +129,8 @@ public class AccountMenu {
 					System.out.println("Your limit was successfully requested! Please check status in the Menu");
 				} catch (InvalidAccountTypeException e) {
 					System.out.println(e.getMessage());
+				} catch (InvalidAmountException e) {
+					System.out.println(e.getMessage());
 				}
 				running = MenuUtils.Continuation(sc);
 				break;
@@ -183,6 +188,98 @@ public class AccountMenu {
 				break;
 			}
 			case 10: {
+				System.out.println("Enter your current password:");
+				String currentPassword = sc.nextLine();
+				System.out.println("Enter your new password:");
+				String newPassword = sc.nextLine();
+
+				try {
+					accountService.changePassword(loggedAccount, currentPassword, newPassword);
+					System.out.println("Password changed successfully.");
+				} catch (InvalidLoginException e) {
+					System.out.println(e.getMessage());
+				}
+				running = MenuUtils.Continuation(sc);
+				break;
+			}
+			case 11: {
+				System.out.println("Please inform your new address:");
+				System.out.println("Example: 111 JK street, Apt 2B, Ipatinga, MG 35160011, BRA");
+				String newAddress = sc.nextLine();
+
+				try {
+					accountService.changeAddress(loggedAccount, newAddress);
+					System.out.println("Address changed successfully.");
+				} catch (InvalidAddressException e) {
+					System.out.println(e.getMessage());
+				}
+				running = MenuUtils.Continuation(sc);
+				break;
+			}
+			case 12: {
+				System.out.println("Please inform your new cell phone number:");
+				System.out.println("Example: 31999999999");
+				String newPhoneNumber = sc.nextLine();
+
+				System.out.println("Please inform your new email:");
+				System.out.println("Example: love@gmail.com");
+				String newEmail = sc.nextLine();
+
+				try {
+					accountService.changeContactInformation(loggedAccount, newPhoneNumber, newEmail);
+					System.out.println("Contact information changed successfully.");
+				} catch (InvalidContactInfoException e) {
+					System.out.println(e.getMessage());
+				}
+				running = MenuUtils.Continuation(sc);
+				break;
+			}
+			case 13: {
+				if (loggedAccount.isCardBlocked()) {
+					System.out.println("Card is already blocked.");
+					break;
+				}
+				System.out.println(
+						"You can block your card if it has been stolen or lost. Are you sure you want to perform this operation? Please enter any letter to (yes) or N(no):");
+				char doBlockCard = sc.next().charAt(0);
+				if (doBlockCard == 'N' || doBlockCard == 'n') {
+					System.out.println("Card block cancelled");
+					break;
+				}
+				loggedAccount.blockCard();
+				System.out.println("Card blocked successfully.");
+				running = MenuUtils.Continuation(sc);
+				break;
+			}
+			case 14: {
+				System.out.println("Card Number: " + loggedAccount.getCardNumber());
+				System.out.println("Expiration Date: " + loggedAccount.getCardExpirationDate());
+				System.out.println("CVV: " + loggedAccount.getCardCVV());
+				System.out.println("Blocked: " + loggedAccount.isCardBlocked());
+				running = MenuUtils.Continuation(sc);
+				break;
+			}
+			case 15: {
+				System.out.println("Enter the amount you want to invest:");
+				double amount = sc.nextDouble();
+
+				try {
+					double projectedValue = accountService.investMoney(loggedAccount, amount);
+					System.out.println("Investment completed successfully!");
+					System.out.printf("Current invested balance: R$ %.2f%n", loggedAccount.getInvestedBalance());
+					System.out.printf("Projected value after 1 year (CDI simulation): R$ %.2f%n", projectedValue);
+
+				} catch (InvalidAccountTypeException e) {
+					System.out.println(e.getMessage());
+				} catch (InvalidAmountException e) {
+					System.out.println(e.getMessage());
+				} catch (InsufficientFundsException e) {
+					System.out.println(e.getMessage());
+				}
+				running = MenuUtils.Continuation(sc);
+				break;
+			}
+			case 16: {
 				System.out.println("Thank you for using our services!");
 				running = false;
 				break;
@@ -202,7 +299,10 @@ public class AccountMenu {
 		System.out.printf("%-30s %s%n", "3 - Transfer", "4 - Check Balance");
 		System.out.printf("%-30s %s%n", "5 - Check Limit", "6 - Request Limit");
 		System.out.printf("%-30s %s%n", "7 - Request Loan", "8 - Transaction History");
-		System.out.printf("%-30s %s%n", "9 - Pay Bills", "10 - Exit");
+		System.out.printf("%-30s %s%n", "9 - Pay Bills", "10 - Change Password");
+		System.out.printf("%-30s %s%n", "11 - Change Address", "12 - Change Contact Information");
+		System.out.printf("%-30s %s%n", "13 - Block Card", "14 - Show Card Information");
+		System.out.printf("%-30s %s%n", "15 - Save Money(CDI)", "16 - Exit");
 	}
 
 }
