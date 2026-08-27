@@ -1,5 +1,7 @@
 package entities;
 
+import exceptions.InsufficientFundsException;
+
 public class CheckingAccount extends Account {
 
 	private Double creditLimit;
@@ -22,7 +24,7 @@ public class CheckingAccount extends Account {
 		if (amount <= balance + creditLimit) {
 			balance -= amount;
 		} else {
-			System.out.println("Insufficient funds!");
+			throw new InsufficientFundsException("Insufficient funds!");
 		}
 	}
 

@@ -1,5 +1,7 @@
 package entities;
 
+import exceptions.InsufficientFundsException;
+
 public class SavingsAccount extends Account {
 
 	private Double interestRate;
@@ -26,7 +28,7 @@ public class SavingsAccount extends Account {
 		if (amount <= balance) {
 			balance -= amount;
 		} else {
-			System.out.println("Insufficient funds!");
+			throw new InsufficientFundsException("Insufficient funds!");
 		}
 	}
 
